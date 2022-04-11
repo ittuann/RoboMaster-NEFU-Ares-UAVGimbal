@@ -1,0 +1,17 @@
+/*
+ * bsp_spi.h
+ *
+ *  Created on: 2021Äê10ÔÂ24ÈÕ
+ *      Author: LBQ
+ */
+#ifndef BSP_SPI_H
+#define BSP_SPI_H
+
+#include "main.h"
+#include "struct_typedef.h"
+#include "spi.h"
+
+extern void SPI1_DMA_init(uint32_t tx_buf, uint32_t rx_buf, uint16_t num);
+extern void SPI1_DMA_enable(uint32_t tx_buf, uint32_t rx_buf, uint16_t ndtr);
+
+#endif
