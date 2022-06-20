@@ -27,6 +27,7 @@ shoot_behaviour_e ShootBehaviour_Mode = DONOT_SHOOT, ShootBehaviour_Last;	// ÔÆÌ
 static motor_measure_t MotorShoot[1];					// ·¢Éä»ú¹¹µç»úÏûÏ¢¶ÓÁĞ
 static Ramp_t Stir, SnailL, SnailR;						// ·¢Éä»ú¹¹»ºÆğ²½
 static uint16_t SnailL_Set = 1000, SnailR_Set = 1000;	// ²âÊÔ
+static uint16_t RattlingWheel_Count = 0;				// ²¦µ¯ÂÖµÈ´ıSnailÑÓ»º¿ªÆô
 
 #if DEBUGMODE
 	static Frequency_t Shoot_Freqency;
@@ -111,6 +112,7 @@ void ShootTask(void const * argument)
 
 		// ÇĞ»»Ä£Ê½Ê±Çå³ıºÍ±£´æ×´Ì¬
 		if (ShootBehaviour_Mode != ShootBehaviour_Last) {
+			RattlingWheel_Count = 0;
 			__HAL_TIM_SetCompare(&htim1, SHOOT_L_TIM_CHANNEL, 1000);
 			__HAL_TIM_SetCompare(&htim1, SHOOT_R_TIM_CHANNEL, 1000);
 			SnailL_Set = SnailR_Set = 1000;
@@ -121,12 +123,15 @@ void ShootTask(void const * argument)
 		}
 
 		if (ShootBehaviour_Mode == SHOOT_NORMAL) {
+			RattlingWheel_Count++;
 			// ¿ªÆôÄ¦²ÁÂÖ
 			SnailL_Set = SnailR_Set = 1200;
 			Snail_Set();
 			// ²¦µ¯ÂÖPID¼ÆËã
-			PID_Mortor_Speed[SpeedPID_ShootM].EX_Val = 1000;
-			PID_Calc(&PID_Mortor_Speed[SpeedPID_ShootM], MotorShoot[0].speed_rpm, RampCalc(&Stir, PID_Mortor_Speed[SpeedPID_ShootM].EX_Val, 50));
+			if (RattlingWheel_Count > 150) {
+				PID_Mortor_Speed[SpeedPID_ShootM].EX_Val = 1000;
+				PID_Calc(&PID_Mortor_Speed[SpeedPID_ShootM], MotorShoot[0].speed_rpm, RampCalc(&Stir, PID_Mortor_Speed[SpeedPID_ShootM].EX_Val, 50));
+			}
 		}
 
 		// ·¢ËÍµç»ú¿ØÖÆµçÁ÷ ÔÚGimbalÈÎÎñÖĞ

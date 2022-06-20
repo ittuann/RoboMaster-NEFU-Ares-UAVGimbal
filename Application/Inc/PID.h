@@ -61,6 +61,13 @@ enum AnglePID_ID_e {
 	AnglePID_NUM
 };
 
+typedef struct {
+	float ILErr;				// 积分项误差死区范围上限
+	float ISErr;				// 积分项误差死区范围下限
+	float outPutLimit;			// 输出项死区
+	float onlineK;				// 强作用比率
+} PIDProfessTypeDef_t;			// 专家PID规则设置
+
 extern	PIDTypeDef_t PID_Mortor_Speed[SpeedPID_NUM];
 extern	PIDTypeDef_t PID_Mortor_Angle[AnglePID_NUM];
 extern	PIDTypeDef_t PID_IMU_Temp;
@@ -69,6 +76,7 @@ extern	void PID_Init(void);
 extern	void PID_Calc_Original(PIDTypeDef_t *pid, float ref, float set);
 extern	void PID_Calc(PIDTypeDef_t *pid, float ref, float set);
 extern	void PID_Calc_Incremental(PIDTypeDef_t *pid, float ref, float set);
+extern	void PID_Profess(PIDTypeDef_t *pid, PIDProfessTypeDef_t *pp, float ref, float set);
 extern	void PID_Clear(PIDTypeDef_t *pid);
 
 #endif

@@ -103,9 +103,9 @@ void RC_Gimbal_Diagram(void)
 	PID_Mortor_Angle[AnglePID_GimbalPitch_Relative].EX_Val += RC_CH_FIR[PITCH_CHANNEL].FilterData;
 
 	// оч╥Ы
-	LIMIT(PID_Mortor_Angle[AnglePID_GimbalPitch].EX_Val, GimbalMachine_Pitch.Min_Angle, GimbalMachine_Pitch.Max_Angle);
-	LIMIT(PID_Mortor_Angle[AnglePID_GimbalYaw].EX_Val, GimbalMachine_Yaw.Min_Angle, GimbalMachine_Yaw.Max_Angle);
-	LIMIT(PID_Mortor_Angle[AnglePID_GimbalPitch_Relative].EX_Val, GimbalMachine_Pitch.Min_Angle, GimbalMachine_Pitch.Max_Angle);
+	USER_LIMIT(PID_Mortor_Angle[AnglePID_GimbalPitch].EX_Val, GimbalMachine_Pitch.Min_Angle, GimbalMachine_Pitch.Max_Angle);
+	USER_LIMIT(PID_Mortor_Angle[AnglePID_GimbalYaw].EX_Val, GimbalMachine_Yaw.Min_Angle, GimbalMachine_Yaw.Max_Angle);
+	USER_LIMIT(PID_Mortor_Angle[AnglePID_GimbalPitch_Relative].EX_Val, GimbalMachine_Pitch.Min_Angle, GimbalMachine_Pitch.Max_Angle);
 }
 
 /**

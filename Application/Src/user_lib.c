@@ -59,6 +59,55 @@ void LowPassFilterIIR2nd(LpfIIR2nd_t* lpf, float rawData)
 }
 
 /**
+ * @brief			简单滤波
+ * @param[out]		lpf : 滤波结构数据指针
+ * @param[in]		rawData : 原始数据
+ */
+void SimpleFilter(LpfSimple_t* lpf, float rawData)
+{
+	uint16_t	i = 0, j = 0;
+	float		FilterBuffSort[SimpleFilterDepth] = {0};	// 暂存排序值
+	float		bubble_sort_temp = 0;   					// 暂存冒泡排序交换量
+    uint8_t		lastSwapIndex = 0, lastSwapIndexTemp = 0;	// 冒泡排序最后一次交换的下标
+
+    lpf->OriginData = rawData;
+    // 滑动递推更新旧值
+    for (i = 1; i < SimpleFilterDepth; i++) {
+    	lpf->FilterBuff[i] = lpf->FilterBuff[i - 1];
+    }
+	// 简单强制消抖 加权存入新值
+    if ((fabsf(lpf->OriginData - lpf->FilterBuff[0])) < 2.0f) {
+    	lpf->FilterBuff[0] = lpf->OriginData * 0.70f + lpf->FilterBuff[0] * 0.30f;
+    } else {
+    	lpf->FilterBuff[0] = lpf->OriginData;
+    }
+	// 存储待排序值
+	memcpy(FilterBuffSort, lpf->FilterBuff, sizeof(lpf->FilterBuff));
+	// 冒泡升序排序
+	lastSwapIndexTemp = SimpleFilterDepth - 1;
+	for (i = 0; i < SimpleFilterDepth - 1; i++) {
+	   lastSwapIndex = lastSwapIndexTemp;
+	   for (j = 0; j < lastSwapIndex; j++) {
+		   if (FilterBuffSort[j] > FilterBuffSort[j + 1]) {
+			   bubble_sort_temp = FilterBuffSort[j];
+			   FilterBuffSort[j] = FilterBuffSort[j + 1];
+			   FilterBuffSort[j + 1] = bubble_sort_temp;
+			   lastSwapIndexTemp = j;
+		   }
+	   }
+	   if (lastSwapIndexTemp == 0) {
+		   break;
+	   }
+	}
+	// 中值滤波
+	lpf->FilterBuff[0] = 0;    // 先清零
+	for (i = 2; i < (SimpleFilterDepth - 2); i++) {
+		lpf->FilterBuff[0] += FilterBuffSort[i];
+	}
+	lpf->FilterBuff[0] = lpf->FilterBuff[0] / (SimpleFilterDepth - 4);	// 去除四个极值再计算均值
+}
+
+/**
  * @brief			计算运行频率
  * @param[out]		ptr : 结构体指针
  */
@@ -124,38 +173,58 @@ void swvPrint(uint8_t port, char *ptr)
   * @brief			us延时
   * @param[in]		us
   */
+#define TimebaseSource_is_SysTick 0
+#if	(!TimebaseSource_is_SysTick)
+	extern TIM_HandleTypeDef htim9;		// 当使用FreeRTOS, TimebaseSource为其他定时器时
+	#define Timebase_htim htim9
+	#define Delay_GetCurrentValueReg()	__HAL_TIM_GetCounter(&Timebase_htim)
+	#define Delay_GetReloadReg()		__HAL_TIM_GetAutoreload(&Timebase_htim)
+#else
+	#define Delay_GetCurrentValueReg()	(SysTick->VAL)
+	#define Delay_GetReloadReg()		(SysTick->LOAD)
+#endif
+
+static uint32_t fac_us = 0;
+static uint32_t fac_ms = 0;
+
+void Delay_us_init(void)
+{
+	#if	(!TimebaseSource_is_SysTick)
+		fac_ms = 1000000;				// 作为时基的计数器时钟频率在HAL_InitTick()中被设为了1MHz
+		fac_us = fac_ms / 1000;
+	#else
+		fac_ms = SystemCoreClock / 1000;
+		fac_us = fac_ms / 1000;
+	#endif
+}
+
 void Delay_us(uint16_t us)
 {
-	const uint8_t fac_us = SystemCoreClock / 1000000;
-//	const uint32_t fac_ms = SystemCoreClock / 1000;
-	/*** Systick功能实现 SYSCLK为系统时钟 ***/
-//    uint32_t ticks = 0;
-//    uint32_t told = 0;
-//    uint32_t tnow = 0;
-//    uint32_t tcnt = 0;
-//    uint32_t reload = 0;
-//    reload = SysTick->LOAD;
-//    ticks = us * fac_us;
-//    told = SysTick->VAL;
-//    while (1) {
-//        tnow = SysTick->VAL;
-//        if (tnow != told) {
-//            if (tnow < told) {
-//                tcnt += told - tnow;
-//            } else {
-//                tcnt += reload - tnow + told;
-//            }
-//            told = tnow;
-//            if (tcnt >= ticks) {
-//                break;
-//            }
-//        }
-//    }
+	/*** 定时器功能实现 ***/
+	uint32_t ticks = us * fac_us;
+	uint32_t reload = Delay_GetReloadReg();
+    uint32_t told = Delay_GetCurrentValueReg();
+    uint32_t tnow = 0;
+    uint32_t tcnt = 0;
+    while (1) {
+        tnow = Delay_GetCurrentValueReg();
+        if (tnow != told) {
+            if (tnow < told) {
+                tcnt += told - tnow;
+            } else {
+                tcnt += reload - tnow + told;
+            }
+            told = tnow;
+            if (tcnt >= ticks) {
+                break;
+            }
+        }
+    }
 
     /*** NOP空语句实现 ***/
-    uint32_t delay = us * fac_us / 4;
-	do {
-		__NOP();
-	}
-	while (delay --);
+//	uint32_t delay = us * fac_us / 4;
+//	do {
+//		__NOP();
+//	}
+//	while (delay --);
 }

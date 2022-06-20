@@ -110,4 +110,3 @@ void HAL_ResumeTick(void)
   __HAL_TIM_ENABLE_IT(&htim9, TIM_IT_UPDATE);
 }
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
