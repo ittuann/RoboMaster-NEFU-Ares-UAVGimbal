@@ -12,7 +12,7 @@ extern CAN_HandleTypeDef hcan2;
 /**
   * @brief          CAN筛选器
   */
-void Can_Filter_Init(void)
+HAL_StatusTypeDef Can_Filter_Init(void)
 {
 	/***	CAN1	***/
     CAN_FilterTypeDef sFilterConfig;
@@ -62,5 +62,7 @@ void Can_Filter_Init(void)
 //	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) {	// 开启CAN2的FIFO0接收中断
 //		Error_Handler();
 //	}
+
+	return HAL_OK;
 }
 

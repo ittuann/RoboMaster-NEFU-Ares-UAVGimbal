@@ -10,7 +10,7 @@
 #include "main.h"
 #include "can.h"
 
-extern void Can_Filter_Init(void);
+extern HAL_StatusTypeDef Can_Filter_Init(void);
 
 #endif
 
