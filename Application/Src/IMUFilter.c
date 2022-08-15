@@ -71,7 +71,7 @@ void q2YawPitchRoll(float *yaw, float *pitch, float *roll)
 void IMUDataUpdate(void)
 {
 	uint8_t i, j;
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < 3; i ++ ) {
 		// 更新滑动窗口数组
 		for (j = GYRO_FILTER_NUM - 1; j > 0; j--) {
 			IMUGyroOrigin[j][i] = IMUGyroOrigin[j - 1][i];
@@ -95,7 +95,7 @@ void IMUDataUpdate(void)
  */
 void IMUDataTransform(void)
 {
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		// 单位g/s
 		IMU_AccelReal[i] = IMUAccelFilter[0][i] * 8.0f / AcceRatio;
 		// 陀螺仪角度转弧度
@@ -109,7 +109,7 @@ void IMUDataTransform(void)
 void IMUSpeedTransform(float *angleNow)
 {
 	static float angleLast[3] = {0};
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		INS_Speed[i] = (angleNow[i] - angleLast[i]) * IMUSampleFreq;
 		angleLast[i] = angleNow[i];
 	}
@@ -123,7 +123,7 @@ void GyroThresholdLimit(void)
 	// 静止阈值 = 0.5度/秒
 	const float GyroThreshold[3] = {0.008f, 0.008f, 0.008f};
 	
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		if ((fabsf(IMUGyroOrigin[0][i] - IMUGyroOrigin[1][i]) < GyroThreshold[i])) {
 			IMUGyroOrigin[0][i] = IMUGyroOrigin[1][i];
 			IMUGyroFilter[0][i] = IMUGyroOrigin[0][i];
@@ -146,9 +146,9 @@ void AccLowpassIIR2Filter(void)
     					-1.561018075800718163392843962355982512236f,
 						0.641351538057563175243558362126350402832f};
 
-    for (uint8_t i = 0; i < 3; i++) {
+    for (uint8_t i = 0; i < 3; i ++ ) {
     	IMUAccelFilter[0][i] = B[0] * IMUAccelOrigin[0][i];	// NUM 分子
-		for (uint8_t j = 1; j <= Order; j++) {
+		for (uint8_t j = 1; j <= Order; j ++ ) {
 			IMUAccelFilter[0][i] = IMUAccelFilter[0][i] + B[j] * IMUAccelOrigin[j][i] - A[j] * IMUAccelFilter[j][i];
 		}
     }
@@ -173,7 +173,7 @@ void AccLowpassIIR2Filter_E(void)
 //	const float _a1 = 2.0f * (ohm * ohm - 1.0f) / c;
 //	const float _a2 = (1.0f - 2.0f * cosf(M_PI_F / 4.0f) * ohm +ohm * ohm) / c;
 //	
-//	for (uint8_t i = 0; i < 3; i++) {
+//	for (uint8_t i = 0; i < 3; i ++ ) {
 //		IMUAccelFilter[0][i] = IMUAccelOrigin[0][i] * _b0 + IMUAccelOrigin[1][i] * _b1 + IMUAccelOrigin[2][i] * _b2 - IMUAccelFilter[1][i] * _a1 - IMUAccelFilter[2][i] * _a2;
 //	}
 }
@@ -190,8 +190,8 @@ void AccLowpassFIR2Filter(void)
 	const float H[order + 1] = {0.018034926458344879146578065842732030433f, 0.963930147083310373545828042551875114441f, 0.018034926458344879146578065842732030433f};
 	
 	IMUAccelFilter[0][0] = IMUAccelFilter[0][1] = IMUAccelFilter[0][2]= 0;
-	for (uint16_t i = 0; i < 3; i++) {
-		for (uint16_t j = 0; j < order + 1; j++) {
+	for (uint16_t i = 0; i < 3; i ++ ) {
+		for (uint16_t j = 0; j < order + 1; j ++ ) {
 			IMUAccelFilter[0][i] += H[j] * IMUAccelOrigin[j][i];
 		}
 	}
@@ -210,7 +210,7 @@ void AccLowpassRC1Filter(void)
 	const float Cof1 = 0.715365f;
 	const float Cof2 = 1.0000f - Cof1;
 	
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		IMUAccelFilter[0][i] = IMUAccelOrigin[0][i] * Cof1 + IMUAccelFilter[1][i] * Cof2;
 	}
 }
@@ -220,7 +220,7 @@ void AccLowpassRC1Filter(void)
  */
 void AccAveFilter(void)
 {
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		IMUAccelFilter[0][i] = (IMUAccelOrigin[0][i] + IMUAccelOrigin[1][i] + IMUAccelOrigin[2][i]) / ACC_FILTER_NUM;
 	}
 }
@@ -240,9 +240,9 @@ void GyroHighpassIIR2Filter(void)
 						-1.911197067426073203932901378720998764038f,
 						 0.914975834801433851595220403396524488926f};
 
-    for (uint8_t i = 0; i < 3; i++) {
+    for (uint8_t i = 0; i < 3; i ++ ) {
 		IMUGyroFilter[0][i] = B[0] * IMUGyroOrigin[0][i];	// NUM 分子
-		for (uint8_t j = 1; j <= Order; j++) {
+		for (uint8_t j = 1; j <= Order; j ++ ) {
 			IMUGyroFilter[0][i] = IMUGyroFilter[0][i] + B[j] * IMUGyroOrigin[j][i] - A[j] * IMUGyroFilter[j][i];
 		}
     }
@@ -259,7 +259,7 @@ void GyroHighpassRC1Filter(void)
 //	const float Coff = RC / (RC + 1.0f / SampleFrq);
 	const float Coff = 1.0f;
 	
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		IMUGyroFilter[0][i] = (IMUGyroOrigin[0][i] - IMUGyroOrigin[1][i] + IMUGyroFilter[1][i]) * Coff;
 	}
 }
@@ -269,7 +269,7 @@ void GyroHighpassRC1Filter(void)
  */
 void GyroAveFilter(void)
 {
-	for (uint8_t i = 0; i < 3; i++) {
+	for (uint8_t i = 0; i < 3; i ++ ) {
 		IMUGyroFilter[0][i] = (IMUGyroOrigin[0][i] + IMUGyroOrigin[1][i] + IMUGyroOrigin[2][i]) / GYRO_FILTER_NUM;
 	}
 }

@@ -49,8 +49,8 @@ void BMI088_write_muli_reg(uint8_t reg, uint8_t *data, uint8_t len)
     BMI088_read_write_byte(reg);
     while( len != 0 ) {
         BMI088_read_write_byte(*data);
-        data ++;
-        len --;
+        data ++ ;
+        len -- ;
     }
 }
 void BMI088_read_muli_reg(uint8_t reg, uint8_t *buf, uint8_t len)
@@ -58,8 +58,8 @@ void BMI088_read_muli_reg(uint8_t reg, uint8_t *buf, uint8_t len)
     BMI088_read_write_byte(reg | 0x80);
     while (len != 0) {
         *buf = BMI088_read_write_byte(0x55);
-        buf++;
-        len--;
+        buf ++ ;
+        len -- ;
     }
 }
 

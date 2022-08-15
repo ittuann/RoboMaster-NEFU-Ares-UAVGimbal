@@ -57,7 +57,7 @@ void ist8310_init(void)
     }
 
     // ÉèÖÃIST8310¹¤×÷×´Ì¬
-    for (writeNum = 0; writeNum < IST8310_WRITE_REG_NUM; writeNum++) {
+    for (writeNum = 0; writeNum < IST8310_WRITE_REG_NUM; writeNum ++ ) {
         ist8310_IIC_write_single_reg(ist8310_write_reg_data[writeNum][0], ist8310_write_reg_data[writeNum][1]);
         Delay_us(wait_time);
         res = ist8310_IIC_read_single_reg(ist8310_write_reg_data[writeNum][0]);

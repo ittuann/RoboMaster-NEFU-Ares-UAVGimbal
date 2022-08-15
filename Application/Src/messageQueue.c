@@ -18,7 +18,7 @@ void MessageQueueCreate(void)
 {
 	uint8_t i = 0;
 	// 电机消息队列
-	for (i = 0; i < IMUANGLE; i++) {
+	for (i = 0; i < IMUANGLE; i ++ ) {
 		messageQueue[i] =  xQueueCreate(1, 2 * sizeof(motor_measure_t *));	// 创建FIFO的长度为1 指向motor_measure_t结构的指针的队列
 	}
 	// IMU消息队列
@@ -26,7 +26,7 @@ void MessageQueueCreate(void)
 	messageQueue[IMUGYRO] =  xQueueCreate(1, 3 * sizeof(float));
 
 	// 校验是否创建失败
-	for (i = 0; i < QUEUE_NUM; i++) {
+	for (i = 0; i < QUEUE_NUM; i ++ ) {
 		if (messageQueue[i] == NULL) {
 			Error_Handler();
 		}

@@ -50,11 +50,11 @@ static void crc16_update(uint16_t *currectCrc, const uint8_t *src, uint32_t leng
 {
 	uint32_t crc = *currectCrc;
 	uint32_t j;
-	for (j = 0; j < lengthInBytes; ++j) {
+	for (j = 0; j < lengthInBytes; j ++ ) {
 		uint32_t i;
 		uint32_t byte = src[j];
 		crc ^= byte << 8;
-		for (i = 0; i < 8; ++i) {
+		for (i = 0; i < 8; i ++ ) {
 			uint32_t temp = crc << 1;
 			if (crc & 0x8000) {
 				temp ^= 0x1021;
@@ -114,7 +114,7 @@ void CH100_Proc(uint8_t data)
             memset(&CH100_buf, 0, sizeof(CH100_buf));
     	}
     	if (ch100_nbyte != 0) {
-    		ch100_nbyte++;
+    		ch100_nbyte ++ ;
     	}
     } else if (ch100_nbyte == CH100_DATA_LEN + 1) {
     	// ¼ÆËãCRC

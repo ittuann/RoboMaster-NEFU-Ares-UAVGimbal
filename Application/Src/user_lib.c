@@ -13,8 +13,8 @@
   */
 float invSqrt(float number)
 {
-	const float x2 = number * 0.5F;
-	const float threehalfs = 1.5F;
+	const float x2 = number * 0.5f;
+	const float threehalfs = 1.5f;
 	union {
 		float f;
 		uint32_t i;
@@ -52,7 +52,7 @@ void LowPassFilterIIR2nd(LpfIIR2nd_t* lpf, float rawData)
 	}
 	lpf->OriginData[0] = rawData;
 	lpf->FilterData[0] = lpf->B[0] * lpf->OriginData[0];	// NUM 分子
-	for (i = 1; i <= Order; i++) {
+	for (i = 1; i <= Order; i ++ ) {
 		lpf->FilterData[0] = lpf->FilterData[0] + lpf->B[i] * lpf->OriginData[i] - lpf->A[i] * lpf->FilterData[i];
 	}
 //	lpf->FilterData[0] = (lpf->B[0] * lpf->OriginData[0] + lpf->B[1] * lpf->OriginData[1] + lpf->B[2] * lpf->OriginData[2] - lpf->A[1] * lpf->FilterData[1] - lpf->A[2] * lpf->FilterData[2]) / lpf->A[0];
@@ -72,7 +72,7 @@ void SimpleFilter(LpfSimple_t* lpf, float rawData)
 
     lpf->OriginData = rawData;
     // 滑动递推更新旧值
-    for (i = 1; i < SimpleFilterDepth; i++) {
+    for (i = 1; i < SimpleFilterDepth; i ++ ) {
     	lpf->FilterBuff[i] = lpf->FilterBuff[i - 1];
     }
 	// 简单强制消抖 加权存入新值
@@ -85,9 +85,9 @@ void SimpleFilter(LpfSimple_t* lpf, float rawData)
 	memcpy(FilterBuffSort, lpf->FilterBuff, sizeof(lpf->FilterBuff));
 	// 冒泡升序排序
 	lastSwapIndexTemp = SimpleFilterDepth - 1;
-	for (i = 0; i < SimpleFilterDepth - 1; i++) {
+	for (i = 0; i < SimpleFilterDepth - 1; i ++ ) {
 	   lastSwapIndex = lastSwapIndexTemp;
-	   for (j = 0; j < lastSwapIndex; j++) {
+	   for (j = 0; j < lastSwapIndex; j ++ ) {
 		   if (FilterBuffSort[j] > FilterBuffSort[j + 1]) {
 			   bubble_sort_temp = FilterBuffSort[j];
 			   FilterBuffSort[j] = FilterBuffSort[j + 1];
@@ -101,7 +101,7 @@ void SimpleFilter(LpfSimple_t* lpf, float rawData)
 	}
 	// 中值滤波
 	lpf->FilterBuff[0] = 0;    // 先清零
-	for (i = 2; i < (SimpleFilterDepth - 2); i++) {
+	for (i = 2; i < (SimpleFilterDepth - 2); i ++ ) {
 		lpf->FilterBuff[0] += FilterBuffSort[i];
 	}
 	lpf->FilterBuff[0] = lpf->FilterBuff[0] / (SimpleFilterDepth - 4);	// 去除四个极值再计算均值
@@ -116,7 +116,7 @@ float GetFrequency(Frequency_t* ptr)
 	if (ptr->SampleCount == 0) {
 		ptr->LastTime = HAL_GetTick();
 	}
-	ptr->SampleCount ++;
+	ptr->SampleCount ++ ;
 	if (ptr->SampleCount > 20) {
 		ptr->NowTime = HAL_GetTick();
 		ptr->Freq = 1000.0f / ((float)(ptr->NowTime - ptr->LastTime) / (float)(ptr->SampleCount - 1));
@@ -152,7 +152,7 @@ float RampCalc(Ramp_t *ptr, int16_t set, int16_t rate)
   */
 void swvPrint(uint8_t port, char *ptr)
 {
-    for (uint16_t i = 0; i < strlen(ptr); i++) {
+    for (uint16_t i = 0; i < strlen(ptr); i ++ ) {
         while (ITM->PORT[port].u32 == 0)
         {
         }

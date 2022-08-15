@@ -162,7 +162,7 @@ void bmi088_accel_init(void)
     }
 
     // 设置传感器的工作状态
-    for (uint8_t write_reg_num = 0; write_reg_num < BMI088_WRITE_ACCEL_REG_NUM; write_reg_num++)
+    for (uint8_t write_reg_num = 0; write_reg_num < BMI088_WRITE_ACCEL_REG_NUM; write_reg_num ++ )
     {
         BMI088_accel_write_single_reg(write_BMI088_accel_reg_data[write_reg_num][0], write_BMI088_accel_reg_data[write_reg_num][1]);
         Delay_us(BMI088_COM_WAIT_SENSOR_TIME);
@@ -205,7 +205,7 @@ void bmi088_gyro_init(void)
     }
 
     // 设置传感器的工作状态
-    for (uint8_t write_reg_num = 0; write_reg_num < BMI088_WRITE_GYRO_REG_NUM; write_reg_num++)
+    for (uint8_t write_reg_num = 0; write_reg_num < BMI088_WRITE_GYRO_REG_NUM; write_reg_num ++ )
     {
         BMI088_gyro_write_single_reg(write_BMI088_gyro_reg_data[write_reg_num][0], write_BMI088_gyro_reg_data[write_reg_num][1]);
         Delay_us(BMI088_COM_WAIT_SENSOR_TIME);

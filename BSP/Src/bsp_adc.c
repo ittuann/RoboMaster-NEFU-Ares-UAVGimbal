@@ -41,7 +41,7 @@ void ADC_Vrefint_Init(void)
 {
     uint32_t total_vrefint = 0;
 	
-    for (uint8_t i = 0; i < 200; i++) {
+    for (uint8_t i = 0; i < 200; i ++ ) {
         total_vrefint += adcx_get_chx_value(&hadc1, ADC_CHANNEL_VREFINT);
     }
 

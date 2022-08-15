@@ -29,7 +29,7 @@ static void get_motor_measure(motor_measure_t *motor, uint8_t data[8])
 //	if (motor->ecd - motor->ecd_last > 4096) {
 //		motor->round--;
 //	} else if (motor->ecd - motor->ecd_last < -4096) {
-//		motor->round++;
+//		motor->round ++ ;
 //	}
 //	motor->position = motor->ecd + motor->round * 8192;
 	// 将电机速度反馈值由无符号整型转变为有符号整型

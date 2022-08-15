@@ -123,7 +123,7 @@ void ShootTask(void const * argument)
 		}
 
 		if (ShootBehaviour_Mode == SHOOT_NORMAL) {
-			RattlingWheel_Count++;
+			RattlingWheel_Count ++ ;
 			// ¿ªÆôÄ¦²ÁÂÖ
 			SnailL_Set = SnailR_Set = 1200;
 			Snail_Set();

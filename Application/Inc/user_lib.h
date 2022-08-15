@@ -31,17 +31,19 @@
 // Function Define
 #define USER_ABS(x)		(((x) > 0) ? (x) : (-(x)))                                          // 宏定义实现返回绝对值(x里不能有自加自减的语句，否则变量出错)
 #define LIMIT_MIN_MAX(x, min, max) ((x) = (((x)<=(min))?(min):(((x)>=(max))?(max):(x))))	// 限幅
-#define USER_LIMIT(x, min, max)			\
-{									\
-        if ((x) > (max)) {			\
-            (x) = (max);			\
-        } else if ((x) < (min)) {	\
-            (x) = (min);			\
-        }							\
+#define USER_LIMIT_MINMAX(x, min, max)	\
+{										\
+        if ((x) > (max)) {				\
+            (x) = (max);				\
+        } else if ((x) < (min)) {		\
+            (x) = (min);				\
+        }								\
     }
-#define USER_MIN(x, y)	(((x) < (y)) ? (x) : (y))                                           // 取小值
-#define USER_MAX(x, y)	(((x) > (y)) ? (x) : (y))                                           // 取大值
-#define USER_SIGN(x)	(((x) > 0) ? 1 :-1) //((int32)(((x)>0?1:-1)*ceil(ABS((x)))))        // 取符号
+#define USER_MIN(x, y)	(((x) < (y)) ? (x) : (y))                                           // 取最小值
+#define USER_MAX(x, y)	(((x) > (y)) ? (x) : (y))                                           // 取最大值
+#define USER_MINF(x, y)	(((x) + (y) - fabs((x) - (y))) / 2)
+#define USER_MF(x, y)	(((x) + (y) + fabs((x) - (y))) / 2)
+#define USER_SIGN(x)	(((x) > 0) ? 1 :-1) //((int32)(((x) > 0 ? 1 : -1) * ceil(ABS((x)))))// 取符号
 #define USER_SWAP(x, y)	do{(x) ^= (y); (y) ^= (x); (x) ^= (y);} while(0)                    // 交换 x, y 的值
 #define USER_ARR_SIZE(a)	( sizeof( (a) ) / sizeof( ((a)[0]) ) )                          // 返回数组元素的个数
 #define USER_OFFSET(type, member)	((uint32_t)(&(((type *)0)->member)))					// 获取结构体某成员偏移

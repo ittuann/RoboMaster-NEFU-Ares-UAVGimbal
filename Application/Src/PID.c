@@ -11,17 +11,21 @@ PIDTypeDef_t PID_IMU_Temp;
 
 /*********** PID系数 ***********/
 // 电机速度环PID系数
-static const float PID_Speed_Param[SpeedPID_NUM][5] =	{{0.65f	, 0.10f	, 0	, 10240	, 5120},
-														{0.65f	, 0.10f	, 0	, 10240	, 5120},
-														{0.65f	, 0.10f	, 0	, 10240	, 8000},
-														{120.0f	, 0.015f, 0	, 4000	, 300},
-														{0.65f	, 0.10f	, 0	, 10240	, 8000}};
+static const float PID_Speed_Param[SpeedPID_NUM][5] =	{
+	{0.65f	, 0.10f	, 0	, 10240	, 5120},
+	{0.65f	, 0.10f	, 0	, 10240	, 5120},
+	{0.65f	, 0.10f	, 0	, 10240	, 8000},
+	{120.0f	, 0.015f, 0	, 4000	, 300},
+	{0.65f	, 0.10f	, 0	, 10240	, 8000}
+};
 // 电机位置环PID系数
-static const float PID_Angle_Param[AnglePID_NUM][5] =	{{5		, 0.10f	, 0		, 25	, 5},
-														{1.2f	, 0		, 0.20f	, 20	, 5},
-														{1000	, 2.10f	, 600	, 10240 , 8000}};
+static const float PID_Angle_Param[AnglePID_NUM][5] =	{
+	{5		, 0.10f	, 0		, 25	, 5},
+	{1.2f	, 0		, 0.20f	, 20	, 5},
+	{1000	, 2.10f	, 600	, 10240 , 8000}
+};
 // 陀螺仪温度PID系数
-static const float PID_IMUTemp_Param[5] =				{200, 10, 0, 1000, 500};
+static const float PID_IMUTemp_Param[5] =	{200, 10, 0, 1000, 500};
 
 /**
   * @brief          PID结构体初始化
@@ -31,7 +35,7 @@ void PID_Init(void)
 	uint8_t i = 0;
 	
 	// 速度环
-	for (i = 0; i < SpeedPID_NUM; i++) {
+	for (i = 0; i < SpeedPID_NUM; i ++ ) {
 		PID_Mortor_Speed[i].Kp = PID_Speed_Param[i][0];
 		PID_Mortor_Speed[i].Ki = PID_Speed_Param[i][1];
 		PID_Mortor_Speed[i].Kd = PID_Speed_Param[i][2];
@@ -44,7 +48,7 @@ void PID_Init(void)
 	}
 	
 	// 位置环
-	for (i = 0; i < AnglePID_NUM; i++) {
+	for (i = 0; i < AnglePID_NUM; i ++ ) {
 		PID_Mortor_Angle[i].Kp = PID_Angle_Param[i][0];
 		PID_Mortor_Angle[i].Ki = PID_Angle_Param[i][1];
 		PID_Mortor_Angle[i].Kd = PID_Angle_Param[i][2];
@@ -92,12 +96,12 @@ void PID_Calc_Original(PIDTypeDef_t *pid, float ref, float set)
 //	pid->Output_i = pid->Ki * pid->Err_Now;
 //	pid->Output_d = pid->Kd * (pid->Err_Now - 2 * pid->Err_Last + pid->Err_LastLast);
 	// 积分项限幅
-	USER_LIMIT(pid->Output_i, -pid->i_Max, pid->i_Max);
-	USER_LIMIT(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
+	USER_LIMIT_MINMAX(pid->Output_i, -pid->i_Max, pid->i_Max);
+	USER_LIMIT_MINMAX(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
 	pid->Output = pid->Output_p + pid->Output_i + pid->Output_d;
 //	pid->Output += pid->Output_p + pid->Output_i + pid->Output_d;
 	// 输出限幅
-	USER_LIMIT(pid->Output, -pid->out_Max, pid->out_Max);
+	USER_LIMIT_MINMAX(pid->Output, -pid->out_Max, pid->out_Max);
 }
 
 /**
@@ -131,13 +135,13 @@ void PID_Calc(PIDTypeDef_t *pid, float ref, float set)
 	pid->Output_d = pid->Kd * (pid->Err_Now - pid->Err_Last);
 	// 微分项不完全微分
 	pid->Output_d = pid->Output_d * 0.850f + pid->Output_dd * (1.000f - 0.850f);
-	USER_LIMIT(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
-	USER_LIMIT(pid->Output_i, -pid->i_Max, pid->i_Max);
+	USER_LIMIT_MINMAX(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
+	USER_LIMIT_MINMAX(pid->Output_i, -pid->i_Max, pid->i_Max);
 	// 位置式 PID 计算
 	pid->Output = pid->Output_p + pid->Output_i + pid->Output_d;
 	// 输出不完全微分
 	pid->Output = pid->Output * 0.850f + pid->Output_Last * (1.000f - 0.850f);
-	USER_LIMIT(pid->Output, -pid->out_Max, pid->out_Max);
+	USER_LIMIT_MINMAX(pid->Output, -pid->out_Max, pid->out_Max);
 }
 
 /**
@@ -171,13 +175,13 @@ void PID_Calc_Incremental(PIDTypeDef_t *pid, float ref, float set)
 	pid->Output_d = pid->Kd * (pid->Err_Now - 2 * pid->Err_Last + pid->Err_LastLast);
 	// 微分项不完全微分
 	pid->Output_d = pid->Output_d * 0.850f + pid->Output_dd * (1.000f - 0.850f);
-	USER_LIMIT(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
-	USER_LIMIT(pid->Output_i, -pid->i_Max, pid->i_Max);
+	USER_LIMIT_MINMAX(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
+	USER_LIMIT_MINMAX(pid->Output_i, -pid->i_Max, pid->i_Max);
 	// 增量式 PID 计算
 	pid->Output += pid->Output_p + pid->Output_i + pid->Output_d;
 	// 输出不完全微分
 	pid->Output = pid->Output * 0.850f + pid->Output_Last * (1.000f - 0.850f);
-	USER_LIMIT(pid->Output, -pid->out_Max, pid->out_Max);
+	USER_LIMIT_MINMAX(pid->Output, -pid->out_Max, pid->out_Max);
 }
 
 /**
@@ -213,8 +217,8 @@ void PID_Profess(PIDTypeDef_t *pid, PIDProfessTypeDef_t *pp, float ref, float se
 	pid->Output_d = pid->Kd * (pid->Err_Now - pid->Err_Last);
 	// 微分项不完全微分
 	pid->Output_d = pid->Output_d * 0.850f + pid->Output_dd * (1.000f - 0.850f);
-	USER_LIMIT(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
-	USER_LIMIT(pid->Output_i, -pid->i_Max, pid->i_Max);
+	USER_LIMIT_MINMAX(pid->Err_Sum, -pid->sum_Max, pid->sum_Max);
+	USER_LIMIT_MINMAX(pid->Output_i, -pid->i_Max, pid->i_Max);
 	// 遇限削弱积分
 	if (fabsf(pid->Output_Last) > pp->outPutLimit) {
 		if ((pid->Err_Sum > 0.0f && pid->Err_Now < 0.0f) || (pid->Err_Sum < 0.0f && pid->Err_Now > 0.0f)) {
@@ -261,7 +265,7 @@ void PID_Profess(PIDTypeDef_t *pid, PIDProfessTypeDef_t *pp, float ref, float se
 	}
 	// 输出不完全微分
 	pid->Output = pid->Output * 0.850f + pid->Output_Last * (1.000f - 0.850f);
-	USER_LIMIT(pid->Output, -pid->out_Max, pid->out_Max);
+	USER_LIMIT_MINMAX(pid->Output, -pid->out_Max, pid->out_Max);
 }
 
 /**

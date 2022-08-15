@@ -60,7 +60,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	if (IMUSampleCount == 0) {
 		IMULastTime  = HAL_GetTick();	// ms
 	}
-	IMUSampleCount++;
+	IMUSampleCount ++ ;
 	if (IMUSampleCount > 20) {
 		IMUNowTime = HAL_GetTick();
 		IMUFreqFilter.OriginData = 1000.0f / ((float)(IMUNowTime - IMULastTime) / (float)(IMUSampleCount - 1));
@@ -171,7 +171,7 @@ void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, flo
 	if (IMUSampleCount == 0) {
 		IMULastTime  = HAL_GetTick();	// ms
 	}
-	IMUSampleCount++;
+	IMUSampleCount ++ ;
 	if (IMUSampleCount > 20) {
 		IMUNowTime = HAL_GetTick();
 		IMUFreqFilter.OriginData = 1000.0f / ((float)(IMUNowTime - IMULastTime) / (float)(IMUSampleCount - 1));
