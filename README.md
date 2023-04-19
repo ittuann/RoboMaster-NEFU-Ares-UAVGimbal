@@ -1,4 +1,12 @@
-第二十一届 RoboMaster 全国大学生机器人大赛 机甲大师赛 Ares战队 空中机器人六轴无人机云台程序框架
+<div style="text-align:center;">
+    <a href="https://github.com/ittuann/RoboMaster_UAV-Gimbal_Ares2022">
+        <img src=".\Pic\Banner.png" alt="Banner" width="80%">
+    </a>
+</div>
+
+第二十一届 RoboMaster 全国大学生机器人大赛 机甲大师赛 Ares战队 空中机器人六轴无人机云台程序框架开源
+
+项目希望探索出，能够给 RoboMaster 比赛中的所有机器人都能使用的一套代码架构，即不同的机器人仅需要修改程序中的结构体和控制器即可复用。因此在设计程序架构时，尽量提高了代码的复用性，并将函数模块化和参数化。
 
 开发环境 STM32CubeIDE - V1.9.0, STM32Cube FW_F4 Package - 1.27.0, FreeRTOS Version - 10.3.1, CMSIS-RTOS Version - 1.02, DSP Library - 1.2.1
 
@@ -6,13 +14,13 @@
 
 开源了程序框架用于讨论。 ~~赛后会整理完整的项目工程~~  无人机摔了三次，项目被迫暂停，已上传目前的完整框架工程。
 
-项目希望探索出，能够给 RoboMaster 比赛中的所有机器人都能使用的一套代码架构，即不同的机器人仅需要修改程序中的结构体和控制器即可复用。因此在设计程序架构时，尽量提高了代码的复用性，并将函数模块化和参数化。
+RoboMaster论坛链接: <https://bbs.robomaster.com/forum.php?mod=viewthread&tid=22085>
 
 ------
 
 # 代码框架图
 
-<img src="Pic\CodeArchitecture.png" alt="CodeArchitecture" style="zoom:80%;" />
+<img src=".\Pic\CodeArchitecture.png" alt="CodeArchitecture" width="50%">
 
 节点机制和消息收发机制是这套框架的亮点。实现了很大程度的代码复用和模块化，以及上层逻辑代码与底层硬件配置代码的隔离。
 

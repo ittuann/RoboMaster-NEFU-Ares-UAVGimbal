@@ -9,6 +9,9 @@
 PIDTypeDef_t PID_Mortor_Speed[SpeedPID_NUM], PID_Mortor_Angle[AnglePID_NUM];
 PIDTypeDef_t PID_IMU_Temp;
 
+//PIDTypeDef_t PIDProfessBaseStruct;
+//PIDProfessTypeDef_t PIDProfess;
+
 /*********** PID系数 ***********/
 // 电机速度环PID系数
 static const float PID_Speed_Param[SpeedPID_NUM][5] =	{
@@ -28,7 +31,26 @@ static const float PID_Angle_Param[AnglePID_NUM][5] =	{
 static const float PID_IMUTemp_Param[5] =	{200, 10, 0, 1000, 500};
 
 /**
-  * @brief          PID结构体初始化
+  * @brief          PID系数初始化（二维数组）
+  */
+void PID_Param2_Init(PIDTypeDef_t *pid, uint8_t num, const float param[][5])
+{
+    if (pid == NULL) {
+        return;
+    }
+	pid->Kp = param[num][0];
+	pid->Ki = param[num][1];
+	pid->Kd = param[num][2];
+	pid->out_Max = param[num][3];
+	pid->i_Max = param[num][4];
+	if (pid->Ki != 0.0f) {
+		pid->sum_Max = 1.15f * pid->i_Max / pid->Ki;
+	}
+	PID_Clear(pid);					// 清除数值
+}
+
+/**
+  * @brief          PID初始化
   */
 void PID_Init(void)
 {
@@ -36,28 +58,12 @@ void PID_Init(void)
 	
 	// 速度环
 	for (i = 0; i < SpeedPID_NUM; i ++ ) {
-		PID_Mortor_Speed[i].Kp = PID_Speed_Param[i][0];
-		PID_Mortor_Speed[i].Ki = PID_Speed_Param[i][1];
-		PID_Mortor_Speed[i].Kd = PID_Speed_Param[i][2];
-		PID_Mortor_Speed[i].out_Max = PID_Speed_Param[i][3];
-		PID_Mortor_Speed[i].i_Max = PID_Speed_Param[i][4];
-		if (PID_Mortor_Speed[i].Ki != 0.0f) {
-			PID_Mortor_Speed[i].sum_Max = 1.15f * PID_Mortor_Speed[i].i_Max / PID_Mortor_Speed[i].Ki;
-		}
-		PID_Clear(&PID_Mortor_Speed[i]);	// 防止电机初始化后疯转
+		PID_Param2_Init(&PID_Mortor_Speed[i], i, PID_Speed_Param);
 	}
 	
 	// 位置环
 	for (i = 0; i < AnglePID_NUM; i ++ ) {
-		PID_Mortor_Angle[i].Kp = PID_Angle_Param[i][0];
-		PID_Mortor_Angle[i].Ki = PID_Angle_Param[i][1];
-		PID_Mortor_Angle[i].Kd = PID_Angle_Param[i][2];
-		PID_Mortor_Angle[i].out_Max = PID_Angle_Param[i][3];
-		PID_Mortor_Angle[i].i_Max = PID_Angle_Param[i][4];
-		if (PID_Mortor_Angle[i].Ki != 0.0f) {
-			PID_Mortor_Angle[i].sum_Max = 1.15f * PID_Mortor_Angle[i].i_Max / PID_Mortor_Angle[i].Ki;
-		}
-		PID_Clear(&PID_Mortor_Angle[i]);	// 防止电机初始化后疯转
+		PID_Param2_Init(&PID_Mortor_Angle[i], i, PID_Angle_Param);
 	}
 	
 	// 陀螺仪温度环
@@ -70,6 +76,10 @@ void PID_Init(void)
 		PID_IMU_Temp.sum_Max = 1.15f * PID_IMU_Temp.i_Max / PID_IMU_Temp.Ki;
 	}
 	PID_Clear(&PID_IMU_Temp);
+
+	// 初始化专家PID的基类指针
+//	PIDProfess.BaseStructInstance = &PIDProfessBaseStruct;
+//	PID_Clear(PIDProfess.BaseStructInstance);
 }
 
 /**
@@ -80,6 +90,9 @@ void PID_Init(void)
   */
 void PID_Calc_Original(PIDTypeDef_t *pid, float ref, float set)
 {
+    if (pid == NULL) {
+        return;
+    }
 	// 更新上次误差
 	pid->Err_Last = pid->Err_Now;
 	// 计算误差
@@ -112,6 +125,9 @@ void PID_Calc_Original(PIDTypeDef_t *pid, float ref, float set)
   */
 void PID_Calc(PIDTypeDef_t *pid, float ref, float set)
 {
+    if (pid == NULL) {
+        return;
+    }
 	// 递推旧值
 	pid->Err_LastLast = pid->Err_Last;
 	pid->Err_Last = pid->Err_Now;
@@ -152,6 +168,9 @@ void PID_Calc(PIDTypeDef_t *pid, float ref, float set)
   */
 void PID_Calc_Incremental(PIDTypeDef_t *pid, float ref, float set)
 {
+    if (pid == NULL) {
+        return;
+    }
 	// 递推旧值
 	pid->Err_LastLast = pid->Err_Last;
 	pid->Err_Last = pid->Err_Now;
@@ -192,6 +211,10 @@ void PID_Calc_Incremental(PIDTypeDef_t *pid, float ref, float set)
   */
 void PID_Profess(PIDTypeDef_t *pid, PIDProfessTypeDef_t *pp, float ref, float set)
 {
+    if (pid == NULL || pp == NULL) {
+        return;
+    }
+
 	float kiIndex = 1.000f;
 
 	// 递推旧值
@@ -275,7 +298,7 @@ void PID_Profess(PIDTypeDef_t *pid, PIDProfessTypeDef_t *pp, float ref, float se
   */
 void PID_Clear(PIDTypeDef_t *pid)
 {
-    if (pid == 0) {
+    if (pid == NULL) {
         return;
     }
 	pid->Last_Val = pid->Now_Val = 0;

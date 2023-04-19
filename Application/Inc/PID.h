@@ -13,7 +13,7 @@
 #include "CAN_receive.h"
 
 //typedef __packed struct
-//typedef struct __attribute__((packed))	// PID结构体不涉及位运算可以不用packed
+//typedef struct __attribute__((packed))	// PID结构体不涉及位运算可以不用字节对齐
 typedef struct
 {
     float   Now_Val;            // 当前值
@@ -62,6 +62,7 @@ enum AnglePID_ID_e {
 };
 
 typedef struct {
+	PIDTypeDef_t *BaseStructInstance;	// 定义PID基类指针
 	float ILErr;				// 积分项误差死区范围上限
 	float ISErr;				// 积分项误差死区范围下限
 	float outPutLimit;			// 输出项死区
@@ -72,6 +73,7 @@ extern	PIDTypeDef_t PID_Mortor_Speed[SpeedPID_NUM];
 extern	PIDTypeDef_t PID_Mortor_Angle[AnglePID_NUM];
 extern	PIDTypeDef_t PID_IMU_Temp;
 
+extern	void PID_Param2_Init(PIDTypeDef_t *pid, uint8_t num, const float param[][5]);
 extern	void PID_Init(void);
 extern	void PID_Calc_Original(PIDTypeDef_t *pid, float ref, float set);
 extern	void PID_Calc(PIDTypeDef_t *pid, float ref, float set);
